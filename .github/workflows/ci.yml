@@ -16,5 +16,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci --legacy-peer-deps
+      - run: npx eslint . --ext .js,.jsx --no-error-on-unmatched-pattern || true
       - run: npm run build
       - run: npm test
