@@ -49,6 +49,12 @@
   <sub>Created by <a href="https://twitter.com/mxstbr">Max Stoiber</a> and maintained with ❤️ by an amazing <a href="https://github.com/orgs/react-boilerplate/people">team of developers</a>.</sub>
 </div>
 
+## Local validation
+
+Use Node.js 22 or 24 and install dependencies with `npm ci --legacy-peer-deps`.
+Run `npm test -- --runInBand --watch=false` for lint, tests, and coverage, and
+`npm run build` for the production bundle. CI runs both commands on pull requests.
+
 ## Features
 
 <dl>
