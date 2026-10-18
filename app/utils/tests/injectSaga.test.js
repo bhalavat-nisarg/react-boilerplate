@@ -86,10 +86,7 @@ describe('injectSaga decorator', () => {
         <ComponentWithSaga {...props} />
       </Provider>,
     );
-    const {
-      props: { children },
-    } = renderedComponent.getInstance();
-    expect(children.props).toEqual(props);
+    expect(renderedComponent.root.findByType(Component).props).toEqual(props);
   });
 });
 
