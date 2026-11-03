@@ -58,6 +58,18 @@ Run `npm test -- --runInBand --watch=false` for lint, tests, and coverage, and
 Image optimization uses image-webpack-loader 8 and SVGO 2. PNG quality is
 configured as a fractional range (`[0.65, 0.9]`) for imagemin-pngquant 9.
 
+This image migration retains the coordinated router/Immutable repair:
+connected-react-router 6.9.3 and Immutable 4.3.9, with no vulnerable Immutable 3
+fallback in the dependency tree.
+
+The SVG detection dependency uses fast-xml-parser 5.7.0 to avoid introducing
+GHSA-gh4j-gqv2-49f6. SVG validation and optimizer compatibility are tested.
+
+The optional public development tunnel has been removed. Use `npm start` for
+local/LAN development; production hosting and server binding are unchanged.
+
+webpack-hot-middleware 2.26.1 keeps HMR event streams open on Node.js 22 and 24.
+
 ## Features
 
 <dl>
