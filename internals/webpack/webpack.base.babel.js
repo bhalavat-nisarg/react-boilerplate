@@ -94,7 +94,14 @@ module.exports = options => ({
       },
       {
         test: /\.html$/,
-        use: 'html-loader',
+        use: {
+          loader: 'html-loader',
+          options: {
+            sources: {
+              list: [{ tag: 'img', attribute: 'src', type: 'src' }],
+            },
+          },
+        },
       },
       {
         test: /\.(mp4|webm)$/,
@@ -121,6 +128,6 @@ module.exports = options => ({
     mainFields: ['browser', 'jsnext:main', 'main'],
   },
   devtool: options.devtool,
-  target: 'web', // Make web variables accessible to webpack, e.g. window
+  target: ['web', 'es5'], // Preserve the application's legacy browser runtime target
   performance: options.performance || {},
 });
