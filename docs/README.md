@@ -55,9 +55,8 @@
       the `<Button>` component reads "Features!!!"... [Hot Module Reloading](https://webpack.js.org/guides/hot-module-replacement/) gives
       you a feedback loop with your UI so smooth it's almost conversational!
     - Click your (newly emphatic) Features button to see React Router in action...
-      Now you can share a direct link to that content privately over your LAN or
-      globally addressable to any device, anywhere. Not bad for a locally-running
-      Single Page App.
+      Now you can share a direct link to that content privately over your LAN.
+      Not bad for a locally-running Single Page App.
 
 1.  Time to build your own app: run
 
@@ -119,8 +118,9 @@ For a thorough explanation of the testing procedure, see the
 
 #### Browser testing
 
-`npm run start:tunnel` makes your locally-running app globally available on the web
-via a temporary URL: great for testing on different devices, client demos, etc!
+Use the LAN address printed by `npm start` to test on devices on a trusted
+network. For off-network testing or demos, deploy the production build to a
+hosting service you control; there is no built-in public tunnel.
 
 #### Unit testing
 
