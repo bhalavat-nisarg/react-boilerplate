@@ -55,6 +55,13 @@ Use Node.js 22 or 24 and install dependencies with `npm ci --legacy-peer-deps`.
 Run `npm test -- --runInBand --watch=false` for lint, tests, and coverage, and
 `npm run build` for the production bundle. CI runs both commands on pull requests.
 
+Immutable is pinned to 4.3.9 for both the application and transitive consumers.
+connected-react-router 6.9.3 supports this version; retain the override to avoid
+reintroducing the vulnerable optional Immutable 3 dependency.
+
+The optional public development tunnel has been removed. Use `npm start` for
+local/LAN development; production hosting and server binding are unchanged.
+
 ## Features
 
 <dl>
