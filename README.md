@@ -62,6 +62,8 @@ reintroducing the vulnerable optional Immutable 3 dependency.
 The optional public development tunnel has been removed. Use `npm start` for
 local/LAN development; production hosting and server binding are unchanged.
 
+webpack-hot-middleware 2.26.1 keeps HMR event streams open on Node.js 22 and 24.
+
 ## Features
 
 <dl>
