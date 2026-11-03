@@ -59,7 +59,7 @@ Most of the errors/warnings would go away once you roll back the problemetic dep
 - Browse example app on development server
   - Browse Features page, change language to `de`
   - Browse NotFound page
-- Browse example app on dev tunnel
+- Browse example app on another device using the LAN address on a trusted network
 - Browse example app on Production server
 - Browse example app offline
 
