@@ -210,7 +210,7 @@ function installPackages() {
       interval = animateProgress('Installing dependencies');
     }, 500);
 
-    exec('npm install', err => {
+    exec('npm install --legacy-peer-deps', err => {
       if (err) {
         reject(new Error(err));
       }

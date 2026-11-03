@@ -4,6 +4,7 @@ const fs = require('fs');
 const http = require('http');
 const net = require('net');
 const path = require('path');
+const { gunzipSync } = require('zlib');
 
 const delay = milliseconds =>
   new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -137,11 +138,11 @@ async function checkServer(mode) {
     assert(script, 'The app shell must reference a JavaScript bundle');
     const bundle = await request(new URL(script[1], baseUrl));
     assert.strictEqual(bundle.status, 200);
+    const route = await request(`${baseUrl}/features`);
+    assert.strictEqual(route.status, 200);
+    assert.strictEqual(route.body, page.body);
 
     if (mode === 'development') {
-      const route = await request(`${baseUrl}/features`);
-      assert.strictEqual(route.status, 200);
-      assert.strictEqual(route.body, page.body);
       await checkHmr(baseUrl);
     } else {
       const worker = await request(`${baseUrl}/sw.js`);
@@ -151,21 +152,48 @@ async function checkServer(mode) {
         'Offline worker must contain assets',
       );
       const files = fs.readdirSync(path.resolve('build'));
-      assert(files.some(file => file.endsWith('.js.gz')));
-      assert(
-        files.some(
-          file => file.startsWith('manifest') && file.endsWith('.json'),
+      const compressed = files.filter(file => file.endsWith('.js.gz'));
+      assert(compressed.length > 0);
+      compressed.forEach(file =>
+        assert(
+          gunzipSync(fs.readFileSync(path.resolve('build', file))).equals(
+            fs.readFileSync(path.resolve('build', file.slice(0, -3))),
+          ),
+          `Invalid gzip output: ${file}`,
         ),
       );
+      const manifestFile = files.find(
+        file => file.startsWith('manifest') && file.endsWith('.json'),
+      );
+      assert(manifestFile);
+      const manifestResponse = await request(`${baseUrl}/${manifestFile}`);
+      assert.strictEqual(manifestResponse.status, 200);
+      const manifest = JSON.parse(manifestResponse.body);
+      assert.strictEqual(manifest.display, 'standalone');
+      assert.strictEqual(manifest.start_url, '.');
+      assert.strictEqual(manifest.name, 'React Boilerplate');
+      assert.deepStrictEqual(
+        manifest.icons.map(icon => parseInt(icon.sizes, 10)).sort((a, b) => a - b),
+        [72, 96, 120, 128, 144, 152, 167, 180, 192, 384, 512],
+      );
       assert(/rel=["']?manifest\b/.test(page.body));
+      assert.strictEqual((page.body.match(/rel=["']?apple-touch-icon\b/g) || []).length, 4);
+      assert(page.body.includes('apple-mobile-web-app-capable'));
       const icons = files.filter(file => /^icon_\d+x\d+.*\.png$/.test(file));
-      assert(icons.length > 0);
+      assert.strictEqual(icons.length, 11);
       icons.forEach(file => {
         const [, width, height] = file.match(/^icon_(\d+)x(\d+)/);
         const png = fs.readFileSync(path.resolve('build', file));
         assert.strictEqual(png.readUInt32BE(16), Number(width));
         assert.strictEqual(png.readUInt32BE(20), Number(height));
+        assert(worker.body.includes(file), `Offline cache omits ${file}`);
       });
+      assert(fs.existsSync(path.resolve('build/favicon.ico')));
+      assert(
+        fs.readFileSync(path.resolve('build/.htaccess')).equals(
+          fs.readFileSync(path.resolve('app/.htaccess')),
+        ),
+      );
     }
     process.stdout.write(
       `${mode}: shell, assets${

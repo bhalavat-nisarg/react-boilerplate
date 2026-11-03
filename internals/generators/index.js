@@ -7,9 +7,9 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const componentGenerator = require('./component/index.js');
-const containerGenerator = require('./container/index.js');
-const languageGenerator = require('./language/index.js');
+const componentGenerator = require('./component/index');
+const containerGenerator = require('./container/index');
+const languageGenerator = require('./language/index');
 
 /**
  * Every generated backup file gets this extension
@@ -34,14 +34,21 @@ module.exports = plop => {
   });
   plop.addHelper('curly', (object, open) => (open ? '{' : '}'));
   plop.setActionType('prettify', (answers, config) => {
-    const folderPath = `${path.join(
-      __dirname,
-      '/../../app/',
-      config.path,
-      plop.getHelper('properCase')(answers.name),
-      '**',
-      '**.js',
-    )}`;
+    let folderPath;
+    if (config.files) {
+      folderPath = config.files
+        .map(file => path.join(__dirname, '../../app', file))
+        .join('" "');
+    } else {
+      folderPath = path.join(
+        __dirname,
+        '/../../app/',
+        config.path,
+        plop.getHelper('properCase')(answers.name),
+        '**',
+        '**.js',
+      );
+    }
 
     try {
       execSync(`npm run prettify -- "${folderPath}"`);
@@ -59,7 +66,6 @@ module.exports = plop => {
           config.path,
           `${config.file}.${BACKUPFILE_EXTENSION}`,
         ),
-        'utf8',
       );
       return path.join(
         __dirname,

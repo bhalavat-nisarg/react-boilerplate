@@ -91,8 +91,12 @@ module.exports = {
     actions.push({
       type: 'modify',
       path: '../../app/app.js',
-      pattern: /(import\('intl\/locale-data\/jsonp\/[a-z]+\.js'\),\n)(?!.*import\('intl\/locale-data\/jsonp\/[a-z]+\.js'\),)/g,
+      pattern: /(import\('intl\/locale-data\/jsonp\/[a-z]+(?:\.js)?'\))(?![\s\S]*import\('intl\/locale-data\/jsonp\/[a-z]+(?:\.js)?'\))/g,
       templateFile: './language/polyfill-intl-locale.hbs',
+    });
+    actions.push({
+      type: 'prettify',
+      files: ['i18n.js', 'app.js'],
     });
 
     if (!test) {

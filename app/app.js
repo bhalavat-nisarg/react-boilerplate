@@ -24,8 +24,8 @@ import App from 'containers/App';
 import LanguageProvider from 'containers/LanguageProvider';
 
 // Load the favicon and the .htaccess file
-import '!file-loader?name=[name].[ext]!./images/favicon.ico';
-import 'file-loader?name=.htaccess!./.htaccess'; // eslint-disable-line import/extensions
+import './images/favicon.ico';
+import './.htaccess'; // eslint-disable-line import/extensions
 
 import configureStore from './configureStore';
 
@@ -76,8 +76,8 @@ if (!window.Intl) {
   })
     .then(() =>
       Promise.all([
-        import('intl/locale-data/jsonp/en.js'),
-        import('intl/locale-data/jsonp/de.js'),
+        import('intl/locale-data/jsonp/en'),
+        import('intl/locale-data/jsonp/de'),
       ]),
     ) // eslint-disable-line prettier/prettier
     .then(() => render(translationMessages))
