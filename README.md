@@ -55,6 +55,9 @@ Use Node.js 22 or 24 and install dependencies with `npm ci --legacy-peer-deps`.
 Run `npm test -- --runInBand --watch=false` for lint, tests, and coverage, and
 `npm run build` for the production bundle. CI runs both commands on pull requests.
 
+Image optimization uses image-webpack-loader 8 and SVGO 2. PNG quality is
+configured as a fractional range (`[0.65, 0.9]`) for imagemin-pngquant 9.
+
 ## Features
 
 <dl>
