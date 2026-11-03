@@ -3,7 +3,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OfflinePlugin = require('offline-plugin');
-const { HashedModuleIdsPlugin } = require('webpack');
+const { ids } = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
@@ -27,7 +27,6 @@ module.exports = require('./webpack.base.babel')({
     minimizer: [
       new TerserPlugin({
         terserOptions: {
-          warnings: false,
           compress: {
             comparisons: false,
           },
@@ -38,9 +37,7 @@ module.exports = require('./webpack.base.babel')({
             ascii_only: true,
           },
         },
-        parallel: true,
-        cache: true,
-        sourceMap: true,
+        parallel: 2,
       }),
     ],
     nodeEnv: 'production',
@@ -136,7 +133,7 @@ module.exports = require('./webpack.base.babel')({
       ],
     }),
 
-    new HashedModuleIdsPlugin({
+    new ids.HashedModuleIdsPlugin({
       hashFunction: 'sha256',
       hashDigest: 'hex',
       hashDigestLength: 20,
