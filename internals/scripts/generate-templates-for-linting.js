@@ -8,9 +8,8 @@
 
 const chalk = require('chalk');
 const fs = require('fs');
-const nodePlop = require('node-plop');
 const path = require('path');
-const rimraf = require('rimraf');
+const { rimraf } = require('rimraf');
 const shell = require('shelljs');
 
 const addCheckmark = require('./helpers/checkmark');
@@ -24,10 +23,9 @@ const { BACKUPFILE_EXTENSION } = require('../generators/index');
 
 process.chdir(path.join(__dirname, '../generators'));
 
-const plop = nodePlop('./index.js');
-const componentGen = plop.getGenerator('component');
-const containerGen = plop.getGenerator('container');
-const languageGen = plop.getGenerator('language');
+let componentGen;
+let containerGen;
+let languageGen;
 
 /**
  * Every generated component/container is preceded by this
@@ -144,16 +142,9 @@ function runLintingOnFile(filePath) {
  * @returns {Promise<any>}
  */
 function removeDir(relativePath) {
-  return new Promise((resolve, reject) => {
-    try {
-      rimraf(path.join(__dirname, '/../../app/', relativePath), err => {
-        if (err) throw err;
-      });
-      resolve(relativePath);
-    } catch (err) {
-      reject(err);
-    }
-  });
+  return rimraf(path.join(__dirname, '/../../app/', relativePath)).then(
+    () => relativePath,
+  );
 }
 
 /**
@@ -374,6 +365,11 @@ async function generateLanguage(language) {
  * Run
  */
 (async function () {
+  const { default: nodePlop } = await import('node-plop');
+  const plop = await nodePlop('./index.js');
+  componentGen = plop.getGenerator('component');
+  containerGen = plop.getGenerator('container');
+  languageGen = plop.getGenerator('language');
   await generateComponents([
     { kind: 'component', name: 'Component', memo: false },
     { kind: 'component', name: 'MemoizedComponent', memo: true },

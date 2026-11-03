@@ -18,6 +18,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci --legacy-peer-deps
+      - run: npm audit --package-lock-only --audit-level=low
       - run: npm run build
+      - run: node internals/scripts/generate-templates-for-linting.js
       - run: npm test -- --runInBand --watch=false
       - run: node internals/scripts/smoke-server.js

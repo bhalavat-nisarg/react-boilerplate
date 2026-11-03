@@ -58,22 +58,56 @@ Run `npm test -- --runInBand --watch=false` for lint, tests, and coverage, and
 The development server uses webpack-dev-middleware 7 with Webpack 5 and retains
 webpack-hot-middleware for HMR. Production still emits hashed chunks, gzip assets,
 PWA icons, and offline caches. The Webpack 5-compatible `@lcdp/offline-plugin`
-fork is installed under the existing `offline-plugin` name to preserve runtime
-registration and AppCache behavior. Webpack's generated runtime targets ES5.
+fork retains runtime registration and optional AppCache support (disabled by
+default upstream). Webpack's generated runtime still targets ES5.
 
-PWA icon generation uses the callback-compatible Jimp 0.9.8 line (up from the
-previous 0.2.28), avoiding the vulnerable ASF parser introduced by Jimp 0.16.
-The Webpack schema URI parser is pinned to patched fast-uri 3.1.9.
+Image optimization uses image-minimizer-webpack-plugin with Sharp for PNG and
+animated GIF, and SVGO for SVG. JPEG remains unmodified, as before. Webpack
+asset modules retain the 10 kB inline threshold. Sharp also generates the same
+Android/iOS PWA icon dimensions, with content-hashed filenames and manifest/Apple
+HTML tags, without the obsolete Jimp/archive-download toolchain.
 
-Image optimization uses image-webpack-loader 8 and SVGO 2. PNG quality is
-configured as a fractional range (`[0.65, 0.9]`) for imagemin-pngquant 9.
+The test runner is Jest 30 with an explicit jsdom environment, Babel 7, the
+React-16-compatible Testing Library 12 API (aliased to preserve existing imports),
+and the original snapshot formatting and coverage thresholds. One shallow
+snapshot now prints the existing ForwardRef display name (`App__AppWrapper`),
+as Jest 30's serializer does; the rendered structure is unchanged. ESLint 8 retains
+the existing Airbnb rule set; its resolver now resolves Node modules and `app`
+directly instead of importing obsolete browser crypto shims.
+
+Stylelint's newer value checks caught `align-items: space-between`, which browsers
+ignore. Removing that ineffective declaration preserves layout; two snapshots
+only change the resulting styled-components class hash. Other snapshot edits are
+Jest's documentation-link header migration.
+
+Small API bridges in `internals/compat` delegate legacy matching to minimatch 11
+and Jest configuration merging to deepmerge-ts 8. They do not retain the
+vulnerable implementations. Regression tests exercise
+their actual consumer APIs, including Glob 7's pattern metadata. `.npmrc` packs
+these local dependencies for portable clean installs. Coveralls uses the
+maintained `coveralls-next` client under the existing command name.
+
+The offline plugin uses patched loader-utils 2.0.4 directly, pinned by a scoped
+override. This version retains the plugin's hashing, query parsing and request
+stringification APIs; no offline loader-utils bridge is needed. Its actual
+consumer resolution was verified after clean locked installs, and the offline
+integration test compiles and executes the generated worker registration and
+AppCache fallback.
+
+Run `npm audit --package-lock-only` to audit every runtime, development, and
+optional dependency. CI fails on any severity or registry error; no audit
+exclusions are configured.
 
 This toolchain migration also retains the coordinated router/Immutable repair:
 connected-react-router 6.9.3 and Immutable 4.3.9, with no vulnerable Immutable 3
 fallback in the dependency tree.
 
-The SVG detection dependency uses fast-xml-parser 5.7.0 to avoid introducing
-GHSA-gh4j-gqv2-49f6. SVG validation and optimizer compatibility are tested.
+SVG validation and optimizer compatibility, PNG transparency, and GIF animation
+are tested without the old SVG-detection/XML-parser dependency chain.
+
+The offline plugin wrapper normalizes generated URLs on Windows. The offline
+integration test compiles and executes both service-worker registration and the
+opt-in AppCache fallback, without enabling AppCache in the application by default.
 
 The optional public development tunnel has been removed. Use `npm start` for
 local/LAN development; production hosting and server binding are unchanged.
@@ -131,7 +165,7 @@ There’s also a <a href="https://vimeo.com/168648012">fantastic video</a> on ho
 
 ## Quick start
 
-1.  Make sure that you have Node.js v8.15.1 and npm v5 or above installed.
+1.  Make sure that you have Node.js 22 or 24 installed.
 2.  Clone this repo using `git clone --depth=1 https://github.com/react-boilerplate/react-boilerplate.git <YOUR_PROJECT_NAME>`
 3.  Move to the appropriate directory: `cd <YOUR_PROJECT_NAME>`.<br />
 4.  Run `npm run setup` in order to install dependencies and clean the git repo.<br />

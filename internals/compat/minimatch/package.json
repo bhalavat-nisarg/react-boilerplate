@@ -1,0 +1,9 @@
+{
+  "name": "@react-boilerplate/minimatch-compat",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "minimatch-modern": "npm:minimatch@11.0.4"
+  }
+}

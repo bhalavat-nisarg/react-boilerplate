@@ -7,7 +7,7 @@
 require('shelljs/global');
 
 const fs = require('fs');
-const nodeGlob = require('glob');
+const { glob } = require('glob');
 const { transform } = require('@babel/core');
 const get = require('lodash/get');
 
@@ -44,15 +44,6 @@ const task = message => {
     return addCheckmark(() => newLine());
   };
 };
-
-// Wrap async functions below into a promise
-const glob = pattern =>
-  new Promise((resolve, reject) => {
-    nodeGlob(
-      pattern,
-      (error, value) => (error ? reject(error) : resolve(value)),
-    );
-  });
 
 const readFile = fileName =>
   new Promise((resolve, reject) => {

@@ -90,6 +90,18 @@ see your work live!
 See the [testing documentation](../testing/README.md) for detailed information
 about our testing setup!
 
+### Dependency security
+
+```Shell
+npm audit --package-lock-only
+```
+
+Audits all runtime, development, and optional dependencies. CI rejects findings
+at every severity. The image/PWA build uses Sharp and SVGO instead of downloaded
+legacy image binaries; the existing offline runtime and opt-in AppCache fallback
+are integration-tested. See the README's local validation notes for compatibility
+bridges and clean-install requirements.
+
 ## Unit testing
 
 ```Shell

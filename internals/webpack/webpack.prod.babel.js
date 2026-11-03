@@ -1,11 +1,11 @@
 // Important modules this config uses
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WebpackPwaManifest = require('webpack-pwa-manifest');
-const OfflinePlugin = require('offline-plugin');
 const { ids } = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const OfflinePlugin = require('./offline-plugin');
+const PwaManifestPlugin = require('./pwa-manifest-plugin');
 
 module.exports = require('./webpack.base.babel')({
   mode: 'production',
@@ -112,7 +112,7 @@ module.exports = require('./webpack.base.babel')({
       minRatio: 0.8,
     }),
 
-    new WebpackPwaManifest({
+    new PwaManifestPlugin({
       name: 'React Boilerplate',
       short_name: 'React BP',
       description: 'My React Boilerplate-based project!',

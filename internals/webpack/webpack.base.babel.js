@@ -4,6 +4,8 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
+const svgToMiniDataURI = require('mini-svg-data-uri');
 
 module.exports = options => ({
   mode: options.mode,
@@ -19,6 +21,16 @@ module.exports = options => ({
   optimization: options.optimization,
   module: {
     rules: [
+      {
+        test: /favicon\.ico$/,
+        type: 'asset/resource',
+        generator: { filename: '[name][ext]' },
+      },
+      {
+        test: /\.htaccess$/,
+        type: 'asset/resource',
+        generator: { filename: '.htaccess' },
+      },
       {
         test: /\.jsx?$/, // Transform all .js and .jsx files required somewhere with Babel
         exclude: /node_modules/,
@@ -43,54 +55,20 @@ module.exports = options => ({
       },
       {
         test: /\.(eot|otf|ttf|woff|woff2)$/,
-        use: 'file-loader',
+        type: 'asset/resource',
       },
       {
         test: /\.svg$/,
-        use: [
-          {
-            loader: 'svg-url-loader',
-            options: {
-              // Inline files smaller than 10 kB
-              limit: 10 * 1024,
-              noquotes: true,
-            },
-          },
-        ],
+        type: 'asset',
+        parser: { dataUrlCondition: { maxSize: 10 * 1024 } },
+        generator: {
+          dataUrl: content => svgToMiniDataURI(content.toString()),
+        },
       },
       {
         test: /\.(jpg|png|gif)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              // Inline files smaller than 10 kB
-              limit: 10 * 1024,
-            },
-          },
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              mozjpeg: {
-                enabled: false,
-                // NOTE: mozjpeg is disabled as it causes errors in some Linux environments
-                // Try enabling it in your environment by switching the config to:
-                // enabled: true,
-                // progressive: true,
-              },
-              gifsicle: {
-                interlaced: false,
-              },
-              optipng: {
-                optimizationLevel: 7,
-              },
-              pngquant: {
-                quality: [0.65, 0.9],
-                speed: 4,
-              },
-            },
-          },
-        ],
+        type: 'asset',
+        parser: { dataUrlCondition: { maxSize: 10 * 1024 } },
       },
       {
         test: /\.html$/,
@@ -105,16 +83,30 @@ module.exports = options => ({
       },
       {
         test: /\.(mp4|webm)$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-          },
-        },
+        type: 'asset',
+        parser: { dataUrlCondition: { maxSize: 10000 } },
       },
     ],
   },
   plugins: options.plugins.concat([
+    new ImageMinimizerPlugin({
+      minimizer: [
+        {
+          implementation: ImageMinimizerPlugin.sharpMinify,
+          filter: (source, filename) => /\.(png|gif)$/i.test(filename),
+          options: {
+            encodeOptions: {
+              png: { quality: 90, palette: true, effort: 7 },
+              gif: { interFrameMaxError: 0, interPaletteMaxError: 0 },
+            },
+          },
+        },
+        {
+          implementation: ImageMinimizerPlugin.svgoMinify,
+          options: { encodeOptions: { multipass: true } },
+        },
+      ],
+    }),
     // Always expose NODE_ENV to webpack, in order to use `process.env.NODE_ENV`
     // inside your code for any environment checks; Terser will automatically
     // drop any unreachable code.
