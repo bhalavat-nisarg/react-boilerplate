@@ -116,12 +116,9 @@ Watches changes to your application and re-runs tests whenever a file changes.
 
 ### Remote testing
 
-```Shell
-npm run start:tunnel
-```
-
-Starts the development server and tunnels it with `ngrok`, making the website
-available worldwide. Useful for testing on different devices in different locations!
+The built-in public tunnel has been removed. For testing on another device,
+use the development server's LAN address on a trusted network. For off-network
+testing, deploy the production build to a hosting service you control.
 
 ### Dependency size test
 

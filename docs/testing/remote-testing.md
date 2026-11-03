@@ -1,12 +1,8 @@
 # Remote testing
 
-```Shell
-npm run start:tunnel
-```
+The built-in public tunnel has been removed. Run `npm start` and use the LAN
+address printed by the server to test on other devices on a trusted network.
 
-This command will start a server and tunnel it with `ngrok`. You'll get a URL
-that looks a bit like this: `http://abcdef.ngrok.com`
-
-This URL will show the version of your application that's in the `build` folder,
-and it's accessible from the entire world! This is great for testing on different
-devices and from different locations!
+For testing from other networks, run `npm run build` and deploy the contents of
+`build` to a hosting service you control. The development server is not intended
+to be exposed publicly.
