@@ -94,7 +94,7 @@
     "minimatch@<5": "$minimatch-compat",
     "minimatch@>=5": "11.0.4",
     "offline-plugin": {
-      "loader-utils": "$offline-loader-utils"
+      "loader-utils": "2.0.4"
     },
     "serialize-javascript": "7.1.4",
     "jest-styled-components": {
@@ -158,7 +158,6 @@
     "minimatch-compat": "file:./internals/compat/minimatch",
     "node-plop": "0.32.3",
     "null-loader": "4.0.1",
-    "offline-loader-utils": "file:./internals/compat/offline-loader-utils",
     "offline-plugin": "npm:@lcdp/offline-plugin@6.0.1",
     "plop": "4.0.5",
     "postcss-styled-syntax": "0.7.4",

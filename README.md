@@ -80,12 +80,19 @@ ignore. Removing that ineffective declaration preserves layout; two snapshots
 only change the resulting styled-components class hash. Other snapshot edits are
 Jest's documentation-link header migration.
 
-Small API bridges in `internals/compat` delegate legacy matching to minimatch 11,
-offline hashing to loader-utils 3, and Jest configuration merging to deepmerge-ts
-8. They do not retain the vulnerable implementations. Regression tests exercise
+Small API bridges in `internals/compat` delegate legacy matching to minimatch 11
+and Jest configuration merging to deepmerge-ts 8. They do not retain the
+vulnerable implementations. Regression tests exercise
 their actual consumer APIs, including Glob 7's pattern metadata. `.npmrc` packs
 these local dependencies for portable clean installs. Coveralls uses the
 maintained `coveralls-next` client under the existing command name.
+
+The offline plugin uses patched loader-utils 2.0.4 directly, pinned by a scoped
+override. This version retains the plugin's hashing, query parsing and request
+stringification APIs; no offline loader-utils bridge is needed. Its actual
+consumer resolution was verified after clean locked installs, and the offline
+integration test compiles and executes the generated worker registration and
+AppCache fallback.
 
 Run `npm audit --package-lock-only` to audit every runtime, development, and
 optional dependency. CI fails on any severity or registry error; no audit

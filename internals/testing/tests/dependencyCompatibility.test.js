@@ -3,7 +3,6 @@ const path = require('path');
 const minimatch = require('minimatch');
 const { globSync } = require('glob');
 const merge = require('deepmerge');
-const loaderUtils = require('offline-loader-utils');
 
 it('supports legacy callable matchers and modern glob consumers', () => {
   expect(minimatch('feature.chunk.js', '*.chunk.js')).toBe(true);
@@ -40,29 +39,4 @@ it('merges Jest presets and globals without mutating inputs or inheriting poison
   const result = merge({}, JSON.parse('{"__proto__":{"polluted":true}}'));
   expect(result.polluted).toBeUndefined();
   expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
-});
-
-it('decodes the offline worker parameters and uses Webpack request contextification', () => {
-  const options = { loaders: [], name: 'test & offline' };
-  expect(
-    JSON.parse(
-      loaderUtils.parseQuery(
-        `?json=${encodeURIComponent(JSON.stringify(options))}`,
-      ).json,
-    ),
-  ).toEqual(options);
-  const contextify = jest.fn(() => './worker.js');
-  expect(
-    loaderUtils.stringifyRequest(
-      { context: path.resolve('app'), utils: { contextify } },
-      path.resolve('app/worker.js'),
-    ),
-  ).toBe('"./worker.js"');
-  expect(contextify).toHaveBeenCalledWith(
-    path.resolve('app'),
-    path.resolve('app/worker.js'),
-  );
-  expect(loaderUtils.getHashDigest('offline asset', 'sha1')).toMatch(
-    /^[a-f0-9]{40}$/,
-  );
 });
